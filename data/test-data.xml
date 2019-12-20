@@ -1,0 +1,24 @@
+<sbml>
+    <model>
+        <listOfReactions>
+            <reaction fast="false" lowerFluxBound="cobra_0_bound" upperFluxBound="cobra_default_ub" id="R_AICARTf" metaid="R_AICARTf" name="AICAR transformylase" reversible="false" sboTerm="SBO:0000375">
+                <listOfReactants>
+                    <speciesReference constant="true" sboTerm="SBO:0000010" species="M_aicar_d" stoichiometry="1"/>
+                    <speciesReference constant="true" sboTerm="SBO:0000010" species="M_mthf_d" stoichiometry="1"/>
+                </listOfReactants>
+                <listOfProducts>
+                    <speciesReference constant="true" sboTerm="SBO:0000011" species="M_faicar_d" stoichiometry="1"/>
+                    <speciesReference constant="true" sboTerm="SBO:0000011" species="M_thf_d" stoichiometry="1"/>
+                    <speciesReference constant="true" sboTerm="SBO:0000011" species="M_h_d" stoichiometry="2"/>
+                </listOfProducts>
+            </reaction>
+        </listOfReactions>
+        <listOfSpecies>
+            <species boundaryCondition="false" compartment="d" constant="false" chemicalFormula="C9H14N4O8P" hasOnlySubstanceUnits="false" id="M_aicar_d" metaid="M_aicar_d" name="AICAR" sboTerm="SBO:0000247"/>
+            <species boundaryCondition="false" compartment="d" constant="false" chemicalFormula="C20H21N7O6" hasOnlySubstanceUnits="false" id="M_mthf_d" metaid="M_mthf_d" name="Methylene-tetrahydrofolate" sboTerm="SBO:0000247"/>
+            <species boundaryCondition="false" compartment="d" constant="false" chemicalFormula="C10H13N4O9P" hasOnlySubstanceUnits="false" id="M_faicar_d" metaid="M_faicar_d" name="5-phosphoribosyl-5-formamido 4-imidazolecarboxamide" sboTerm="SBO:0000247"/>
+            <species boundaryCondition="false" compartment="d" constant="false" chemicalFormula="C19H21N7O6" hasOnlySubstanceUnits="false" id="M_thf_d" metaid="M_thf_d" name="Tetrahydrofolate" sboTerm="SBO:0000247"/>
+            <species boundaryCondition="false" compartment="d" constant="false" chemicalFormula="H" hasOnlySubstanceUnits="false" id="M_h_d" metaid="M_h_d" name="H+" sboTerm="SBO:0000247"/>
+        </listOfSpecies>
+    </model>
+</sbml>
