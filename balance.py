@@ -10,9 +10,12 @@ class Balancer:
     node_name_reactants = "listOfReactants"
     node_name_products = "listOfProducts"
     node_name_species_ref = "speciesReference"
+    node_name_species = "species"
+    reaction_attribute_id = "id"
     species_ref_attribute_id = "species"
     species_ref_attribute_coefficient = "stoichiometry"
-    node_name_species = "species"
+    species_attribute_id = "id"
+    species_attribute_chemical_formula = "chemicalFormula"
 
     def get_full_file_name(self):
         full_file_name = os.path.abspath(os.path.join("data", self.file_name))
@@ -24,7 +27,23 @@ class Balancer:
         model = root.find("model")
         return model
 
-    def get_dict_of_species_references(self, list):
+    def get_reactions(self, model_node):
+        reactions = {}
+        list_of_reactions = model_node.find(self.node_name_list_of_reactions)
+        for reaction in list_of_reactions:
+            reaction_list_tuple = self.get_reaction_content(reaction)
+            (reaction_id, list_of_reactants, list_of_products) = reaction_list_tuple
+            reactions.update({reaction_id : (list_of_reactants, list_of_products)})
+        return reactions
+
+    def get_reaction_content(self, parent_node):
+        reaction_attributes = parent_node.attrib
+        reaction_id = reaction_attributes.get(self.reaction_attribute_id)
+        list_of_reactants = parent_node.findall(self.node_name_reactants)
+        list_of_products = parent_node.findall(self.node_name_products)
+        return reaction_id, list_of_reactants, list_of_products
+
+    def get_species_references(self, list):
         dict = {}
         for list_element in list:
             list_of_species_refs = list_element.findall(self.node_name_species_ref)
@@ -35,29 +54,14 @@ class Balancer:
                 dict.update({id : coefficient})
         return dict
 
-    def get_reaction_content(self, parent_node):
-        reaction_attributes = parent_node.attrib
-        reaction_id = reaction_attributes.get("id")
-        list_of_reactants = parent_node.findall(self.node_name_reactants)
-        list_of_products = parent_node.findall(self.node_name_products)
-        return reaction_id, list_of_reactants, list_of_products
-
-    def get_reactions(self, model_node):
-        reactions = {}
-        list_of_reactions = model_node.find(self.node_name_list_of_reactions)
-        for reaction in list_of_reactions:
-            reaction_list_tupel = self.get_reaction_content(reaction)
-            (reaction_id, list_of_reactants, list_of_products) = reaction_list_tupel
-            reactions.update({reaction_id : (list_of_reactants, list_of_products)})
-        return reactions
-
     def get_species(self, model_node):
         species = {}
-        list_of_species = model_node.findall(self.node_name_species)
+        list_of_species = model_node.find(self.node_name_list_of_species)
         for s in list_of_species:
             species_attributes = s.attrib
-            id = species_attributes.get("id")
-            chemical_formula = species_attributes.get("chemicalFormula")
+            id = species_attributes.get(self.species_attribute_id)
+            chemical_formula = species_attributes.get(self.species_attribute_chemical_formula)
+            species.update({id : chemical_formula})
         return species
 
 b = Balancer()
@@ -67,7 +71,10 @@ model = b.get_model_node(full_file_name)
 
 reactions = b.get_reactions(model)
 for reaction_id, (list_of_reactants, list_of_products) in reactions.items():
-    dict_reactants = b.get_dict_of_species_references(list_of_reactants)
-    dict_products = b.get_dict_of_species_references(list_of_products)
+    dict_reactants = b.get_species_references(list_of_reactants)
+    dict_products = b.get_species_references(list_of_products)
     print(dict_reactants)
     print(dict_products)
+
+species = b.get_species(model)
+print(species)
