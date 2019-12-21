@@ -104,6 +104,21 @@ class Balancer:
         except ValueError:
             return False
 
+    # TODO implement
+    def calculate_chemical_formula(self, species_dict, species_id, coefficient):
+        my_dict = {}
+        # get the species out of species_dict
+        # and calculate the formula using the chemicalFormula and coefficient
+        pass
+
+    # TODO implement
+    def combine_chemical_formulas(self, formulas):
+        # takes a list of formulas and combines them
+        pass
+
+    # TODO implement
+    def compare(self, reactants_formula, products_formula):
+        pass
 
 b = Balancer()
 full_file_name = b.get_full_file_name()
