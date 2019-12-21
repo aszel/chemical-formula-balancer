@@ -64,6 +64,12 @@ class Balancer:
             species.update({id : chemical_formula})
         return species
 
+    def create_chemical_formula_model(self, species):
+        # TODO - implement
+        # each chemicalFormula -> C21H26N7O17P3
+        # must be turned into a dictionary {'element', 'coefficient'}
+        pass
+
 b = Balancer()
 full_file_name = b.get_full_file_name()
 

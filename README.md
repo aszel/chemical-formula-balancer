@@ -10,7 +10,7 @@
   - get listOfReactants
   - get listOfProducts
 
-    ### example reaction
+    example reaction
     <reaction fast="false" lowerFluxBound="cobra_0_bound" upperFluxBound="cobra_default_ub" id="R_AICARTf" metaid="R_AICARTf" name="AICAR transformylase" reversible="false" sboTerm="SBO:0000375">
         <listOfReactants>
             <speciesReference constant="true" sboTerm="SBO:0000010" species="M_aicar_d" stoichiometry="2"/>
