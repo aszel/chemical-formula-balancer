@@ -104,19 +104,23 @@ class Balancer:
         except ValueError:
             return False
 
+    def get_combined_chemical_formula(self, species_dict, dict_elements):
+        my_formulas_list = []
+        for id, coefficient in dict_elements.items():
+            calculated_formula = self.calculate_chemical_formula(species_dict, id, coefficient)
+            my_formulas_list.append(calculated_formula)
+        my_dict = self.combine_chemical_formulas(my_formulas_list)
+        return my_dict
+
     def calculate_chemical_formula(self, species_dict, id, coefficient):
         my_dict = {}
         specie_chem_form = species_dict.get(id)
-
         for element, amount in specie_chem_form.items():
-            updated_amount = int(amount) * coefficient
+            updated_amount = int(amount) * int(coefficient)
             my_dict.update({element : updated_amount})
-        print("formula: ", specie_chem_form, " updated formula: ", my_dict)
+        #print("formula: ", specie_chem_form, " updated formula: ", my_dict)
         return my_dict
 
-    """
-    Combines a list of formulas
-    """
     def combine_chemical_formulas(self, formulas_list):
         my_dict = {}
         for formula in formulas_list:
@@ -129,9 +133,15 @@ class Balancer:
                     my_dict.update({key : new_value})
         return my_dict
 
-    # TODO implement
-    def compare(self, reactants_formula, products_formula):
-        pass
+    def compare(self, d1, d2):
+        d1_keys = set(d1.keys())
+        d2_keys = set(d2.keys())
+        intersect_keys = d1_keys.intersection(d2_keys)
+        added = d1_keys - d2_keys
+        removed = d2_keys - d1_keys
+        modified = {o : (d1[o], d2[o]) for o in intersect_keys if d1[o] != d2[o]}
+        same = set(o for o in intersect_keys if d1[o] == d2[o])
+        return added, removed, modified, same
 
 b = Balancer()
 full_file_name = b.get_full_file_name()
@@ -139,7 +149,13 @@ full_file_name = b.get_full_file_name()
 model = b.get_model_node(full_file_name)
 
 species = b.get_species(model)
-print(species)
+#print(species)
+
+# DO NOT DELETE - this is for testing
+#b.calculate_chemical_formula(species, "M_aicar_d", 2)
+#test_formula_list = [{'C': 2, 'H': 1, 'N': 8}, {'C': 3, 'H': 2, 'X': 8}]
+#combined_formulas = b.combine_chemical_formulas(test_formula_list)
+#print(combined_formulas)
 
 reactions = b.get_reactions(model)
 for reaction_id, (list_of_reactants, list_of_products) in reactions.items():
@@ -147,13 +163,11 @@ for reaction_id, (list_of_reactants, list_of_products) in reactions.items():
     print("Reaction  -> ", reaction_id)
     dict_reactants = b.get_species_references(list_of_reactants)
     dict_products = b.get_species_references(list_of_products)
+    combined_reactants_formula = b.get_combined_chemical_formula(species, dict_reactants)
+    combined_products_formula = b.get_combined_chemical_formula(species, dict_products)
     print("Reactants -> ", dict_reactants)
     print("Products  -> ", dict_products)
-
-
-
-b.calculate_chemical_formula(species, "M_aicar_d", 2)
-
-test_formula_list = [{'C': 2, 'H': 1, 'N': 8}, {'C': 3, 'H': 2, 'X': 8}]
-combined_formulas = b.combine_chemical_formulas(test_formula_list)
-print(combined_formulas)
+    print("Reactants Combined -> ", combined_reactants_formula)
+    print("Products Combined  -> ", combined_products_formula)
+    added, removed, modified, same = b.compare(combined_reactants_formula, combined_products_formula)
+    print("Comparison -> \nReactants only: ", added, "\nProducts only: ", removed, "\nDifferences: ", modified, "\nEqual elements: ", same)
