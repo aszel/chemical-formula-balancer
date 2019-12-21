@@ -93,7 +93,7 @@ class Balancer:
             # Catch the last element without a number.
             # If element has no following number then it gets the value 1
             if key and not value:
-                my_dict.update({key: 1})
+                my_dict.update({key: '1'})
 
         return my_dict
 
@@ -111,13 +111,23 @@ class Balancer:
         for element, amount in specie_chem_form.items():
             updated_amount = int(amount) * coefficient
             my_dict.update({element : updated_amount})
-        #print("formula: ", specie_chem_form, " updated formula: ", my_dict)
+        print("formula: ", specie_chem_form, " updated formula: ", my_dict)
         return my_dict
 
-    # TODO implement
-    def combine_chemical_formulas(self, formulas):
-        # takes a list of formulas and combines them
-        pass
+    """
+    Combines a list of formulas
+    """
+    def combine_chemical_formulas(self, formulas_list):
+        my_dict = {}
+        for formula in formulas_list:
+            for key, value in formula.items():
+                if not key in my_dict:
+                    my_dict.update({key : value})
+                else:
+                    existing_value = my_dict.get(key)
+                    new_value = int(existing_value) + int(value)
+                    my_dict.update({key : new_value})
+        return my_dict
 
     # TODO implement
     def compare(self, reactants_formula, products_formula):
@@ -140,4 +150,10 @@ for reaction_id, (list_of_reactants, list_of_products) in reactions.items():
     print("Reactants -> ", dict_reactants)
     print("Products  -> ", dict_products)
 
+
+
 b.calculate_chemical_formula(species, "M_aicar_d", 2)
+
+test_formula_list = [{'C': 2, 'H': 1, 'N': 8}, {'C': 3, 'H': 2, 'X': 8}]
+combined_formulas = b.combine_chemical_formulas(test_formula_list)
+print(combined_formulas)
