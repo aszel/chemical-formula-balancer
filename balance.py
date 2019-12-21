@@ -63,7 +63,9 @@ class Balancer:
             id = species_attributes.get(self.species_attribute_id)
             chemical_formula = species_attributes.get(self.species_attribute_chemical_formula)
             species.update({id : chemical_formula})
-        return species
+
+        updated_species = self.create_chemical_formula_model(species)
+        return updated_species
 
     """
     Turn a chemicalFormula string like "C21H26N7O17P3"
@@ -73,6 +75,7 @@ class Balancer:
         for id, chemical_formula_string in species.items():
             my_dict = self.build_dictionary_of_string(id, chemical_formula_string)
             species[id] = my_dict
+        return species
 
     def build_dictionary_of_string(self, id, chemical_formula_string):
         chemical_formula_list = (re.findall(r'[A-Za-z]|-?\d+\.\d+|\d+', chemical_formula_string))
@@ -107,13 +110,14 @@ full_file_name = b.get_full_file_name()
 
 model = b.get_model_node(full_file_name)
 
+species = b.get_species(model)
+print(species)
+
 reactions = b.get_reactions(model)
 for reaction_id, (list_of_reactants, list_of_products) in reactions.items():
+    print("------------")
+    print("Reaction  -> ", reaction_id)
     dict_reactants = b.get_species_references(list_of_reactants)
     dict_products = b.get_species_references(list_of_products)
-    print(dict_reactants)
-    print(dict_products)
-
-species = b.get_species(model)
-b.create_chemical_formula_model(species)
-print(species)
+    print("Reactants -> ", dict_reactants)
+    print("Products  -> ", dict_products)
