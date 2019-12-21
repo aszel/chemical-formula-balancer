@@ -1,5 +1,6 @@
 import os
 import xml.etree.ElementTree as ET
+import re
 
 class Balancer:
 
@@ -64,11 +65,42 @@ class Balancer:
             species.update({id : chemical_formula})
         return species
 
+    """
+    Turn a chemicalFormula string like "C21H26N7O17P3"
+    in a dictionary like this: {'C', '21'},{'H', '26'}...
+    """
     def create_chemical_formula_model(self, species):
-        # TODO - implement
-        # each chemicalFormula -> C21H26N7O17P3
-        # must be turned into a dictionary {'element', 'coefficient'}
-        pass
+        for id, chemical_formula_string in species.items():
+            my_dict = self.build_dictionary_of_string(id, chemical_formula_string)
+            species[id] = my_dict
+
+    def build_dictionary_of_string(self, id, chemical_formula_string):
+        chemical_formula_list = (re.findall(r'[A-Za-z]|-?\d+\.\d+|\d+', chemical_formula_string))
+        my_dict = {}
+        key, value = "", ""
+        for element in chemical_formula_list:
+            if self.is_integer(element):
+                value = element
+                my_dict.update({key: value})
+                # flush key and value
+                key, value = "", ""
+            else:
+                key = element
+
+            # Catch the last element without a number.
+            # If element has no following number then it gets the value 1
+            if key and not value:
+                my_dict.update({key: 1})
+
+        return my_dict
+
+    def is_integer(self, s):
+        try:
+            int(s)
+            return True
+        except ValueError:
+            return False
+
 
 b = Balancer()
 full_file_name = b.get_full_file_name()
@@ -83,4 +115,5 @@ for reaction_id, (list_of_reactants, list_of_products) in reactions.items():
     print(dict_products)
 
 species = b.get_species(model)
+b.create_chemical_formula_model(species)
 print(species)
