@@ -104,12 +104,15 @@ class Balancer:
         except ValueError:
             return False
 
-    # TODO implement
-    def calculate_chemical_formula(self, species_dict, species_id, coefficient):
+    def calculate_chemical_formula(self, species_dict, id, coefficient):
         my_dict = {}
-        # get the species out of species_dict
-        # and calculate the formula using the chemicalFormula and coefficient
-        pass
+        specie_chem_form = species_dict.get(id)
+
+        for element, amount in specie_chem_form.items():
+            updated_amount = int(amount) * coefficient
+            my_dict.update({element : updated_amount})
+        #print("formula: ", specie_chem_form, " updated formula: ", my_dict)
+        return my_dict
 
     # TODO implement
     def combine_chemical_formulas(self, formulas):
@@ -136,3 +139,5 @@ for reaction_id, (list_of_reactants, list_of_products) in reactions.items():
     dict_products = b.get_species_references(list_of_products)
     print("Reactants -> ", dict_reactants)
     print("Products  -> ", dict_products)
+
+b.calculate_chemical_formula(species, "M_aicar_d", 2)
