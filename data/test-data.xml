@@ -1,17 +1,25 @@
 <sbml>
     <model>
         <listOfReactions>
+
+            <!-- Test reaction with species which does not exist -->
             <reaction fast="false" lowerFluxBound="cobra_0_bound" upperFluxBound="cobra_default_ub" id="R_NADPH_HR" metaid="R_NADPH_HR" name="NADPH-hemoprotein reductase" reversible="false" sboTerm="SBO:0000375">
                 <listOfReactants>
                     <speciesReference constant="true" sboTerm="SBO:0000010" species="M_CytB5ox_r" stoichiometry="2"/>
+
+                    <!-- species does not exist -->
                     <speciesReference constant="true" sboTerm="SBO:0000010" species="M_nadph_r" stoichiometry="1"/>
                 </listOfReactants>
                 <listOfProducts>
                     <speciesReference constant="true" sboTerm="SBO:0000011" species="M_CytB5rd_r" stoichiometry="2"/>
+
+                    <!-- species does not exist -->
                     <speciesReference constant="true" sboTerm="SBO:0000011" species="M_nadp_r" stoichiometry="1"/>
+
                     <speciesReference constant="true" sboTerm="SBO:0000011" species="M_h_r" stoichiometry="2"/>
                 </listOfProducts>
             </reaction>
+
             <reaction fast="false" lowerFluxBound="cobra_0_bound" upperFluxBound="cobra_default_ub" id="R_AICARTf" metaid="R_AICARTf" name="AICAR transformylase" reversible="false" sboTerm="SBO:0000375">
                 <listOfReactants>
                     <speciesReference constant="true" sboTerm="SBO:0000010" species="M_aicar_d" stoichiometry="1"/>
@@ -24,7 +32,7 @@
                 </listOfProducts>
             </reaction>
 
-            <!-- a test reaction -->
+            <!-- Test reaction with all possible cases of different element distribution between reactants and products -->
             <reaction fast="false" lowerFluxBound="cobra_0_bound" upperFluxBound="cobra_default_ub" id="Reaction_MARTIN" metaid="R_AICARTf" name="AICAR transformylase" reversible="false" sboTerm="SBO:0000375">
                 <listOfReactants>
                     <speciesReference constant="true" sboTerm="SBO:0000010" species="test_1" stoichiometry="2"/>
@@ -37,7 +45,7 @@
                 </listOfProducts>
             </reaction>
 
-            <!-- a test reaction with a reactant with no chemical formula -->
+            <!-- Test reaction with a reactant without chemical formula -->
             <reaction fast="false" lowerFluxBound="cobra_0_bound" upperFluxBound="cobra_default_ub" id="Reaction_MARTIN_WITHOUT_CHEM_FORMULA" metaid="R_AICARTf" name="AICAR transformylase" reversible="false" sboTerm="SBO:0000375">
                 <listOfReactants>
                     <speciesReference constant="true" sboTerm="SBO:0000010" species="test_1" stoichiometry="2"/>
