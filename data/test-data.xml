@@ -1,6 +1,17 @@
 <sbml>
     <model>
         <listOfReactions>
+            <reaction fast="false" lowerFluxBound="cobra_0_bound" upperFluxBound="cobra_default_ub" id="R_NADPH_HR" metaid="R_NADPH_HR" name="NADPH-hemoprotein reductase" reversible="false" sboTerm="SBO:0000375">
+                <listOfReactants>
+                    <speciesReference constant="true" sboTerm="SBO:0000010" species="M_CytB5ox_r" stoichiometry="2"/>
+                    <speciesReference constant="true" sboTerm="SBO:0000010" species="M_nadph_r" stoichiometry="1"/>
+                </listOfReactants>
+                <listOfProducts>
+                    <speciesReference constant="true" sboTerm="SBO:0000011" species="M_CytB5rd_r" stoichiometry="2"/>
+                    <speciesReference constant="true" sboTerm="SBO:0000011" species="M_nadp_r" stoichiometry="1"/>
+                    <speciesReference constant="true" sboTerm="SBO:0000011" species="M_h_r" stoichiometry="2"/>
+                </listOfProducts>
+            </reaction>
             <reaction fast="false" lowerFluxBound="cobra_0_bound" upperFluxBound="cobra_default_ub" id="R_AICARTf" metaid="R_AICARTf" name="AICAR transformylase" reversible="false" sboTerm="SBO:0000375">
                 <listOfReactants>
                     <speciesReference constant="true" sboTerm="SBO:0000010" species="M_aicar_d" stoichiometry="1"/>
@@ -46,6 +57,7 @@
             <species boundaryCondition="false" compartment="d" constant="false" chemicalFormula="C10H13N4O9P" hasOnlySubstanceUnits="false" id="M_faicar_d" metaid="M_faicar_d" name="5-phosphoribosyl-5-formamido 4-imidazolecarboxamide" sboTerm="SBO:0000247"/>
             <species boundaryCondition="false" compartment="d" constant="false" chemicalFormula="C19H21N7O6" hasOnlySubstanceUnits="false" id="M_thf_d" metaid="M_thf_d" name="Tetrahydrofolate" sboTerm="SBO:0000247"/>
             <species boundaryCondition="false" compartment="d" constant="false" chemicalFormula="H" hasOnlySubstanceUnits="false" id="M_h_d" metaid="M_h_d" name="H+" sboTerm="SBO:0000247"/>
+
             <!-- some test species -->
             <species boundaryCondition="false" compartment="d" constant="false" chemicalFormula="A1B1L5" hasOnlySubstanceUnits="false" id="test_1" metaid="M_h_d" name="H+" sboTerm="SBO:0000247"/>
             <species boundaryCondition="false" compartment="d" constant="false" chemicalFormula="A22F2E" hasOnlySubstanceUnits="false" id="test_2" metaid="M_h_d" name="H+" sboTerm="SBO:0000247"/>
@@ -54,6 +66,9 @@
             <species boundaryCondition="false" compartment="d" constant="false" chemicalFormula="X1Y2" hasOnlySubstanceUnits="false" id="test_5" metaid="M_h_d" name="H+" sboTerm="SBO:0000247"/>
 
             <species boundaryCondition="false" compartment="c" constant="false" chemicalFormula="" hasOnlySubstanceUnits="false" id="M_Biomass_c" metaid="M_Biomass_c" name="Biomass" sboTerm="SBO:0000247"/>
+
+            <species boundaryCondition="false" compartment="r" constant="false" chemicalFormula="FeX" hasOnlySubstanceUnits="false" id="M_CytB5ox_r" metaid="M_CytB5ox_r" name="Ferricytochrome b5, oxidized" sboTerm="SBO:0000247"/>
+            <species boundaryCondition="false" compartment="r" constant="false" chemicalFormula="FeX" hasOnlySubstanceUnits="false" id="M_CytB5rd_r" metaid="M_CytB5rd_r" name="Ferricytochrome b5, reduced" sboTerm="SBO:0000247"/>
         </listOfSpecies>
     </model>
 </sbml>

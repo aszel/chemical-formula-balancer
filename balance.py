@@ -4,8 +4,8 @@ import re
 
 class Balancer:
 
-    #file_name = "Supporting Information File S1_Jcurcas_model.xml"
-    file_name = "test-data.xml"
+    file_name = "Supporting Information File S1_Jcurcas_model.xml"
+    #file_name = "test-data.xml"
     node_name_list_of_species = "listOfSpecies"
     node_name_list_of_reactions = "listOfReactions"
     node_name_reactants = "listOfReactants"
@@ -104,13 +104,11 @@ class Balancer:
         except ValueError:
             return False
 
-    def get_combined_chemical_formula(self, species_dict, species_dict_without_chem_formula, dict_elements):
+    def get_combined_chemical_formula(self, species_dict, dict_elements):
         my_formulas_list = []
         for id, coefficient in dict_elements.items():
-            # skip reactants / products without chemical formula
-            if not id in species_dict_without_chem_formula:
-                calculated_formula = self.calculate_chemical_formula(species_dict, id, coefficient)
-                my_formulas_list.append(calculated_formula)
+            calculated_formula = self.calculate_chemical_formula(species_dict, id, coefficient)
+            my_formulas_list.append(calculated_formula)
         my_dict = self.combine_chemical_formulas(my_formulas_list)
         return my_dict
 
@@ -145,6 +143,19 @@ class Balancer:
         same = set(o for o in intersect_keys if d1[o] == d2[o])
         return added, removed, modified, same
 
+    """
+    function takes a list of reactants/products and removes those which yield
+    a none-integer value as coefficient or their referrenced species has no
+    chemical formula
+    """
+    def remove_unusable_elements(self, elements_dict, species_without_chemical_formula):
+        my_dict = {}
+        for id, coefficient in elements_dict.items():
+            if not id in species_without_chemical_formula and self.is_integer(coefficient):
+                my_dict.update({id : coefficient})
+        return my_dict
+
+
 b = Balancer()
 full_file_name = b.get_full_file_name()
 model = b.get_model_node(full_file_name)
@@ -155,17 +166,27 @@ species, species_without_chemical_formula = b.get_species(model)
 #test_formula_list = [{'C': 2, 'H': 1, 'N': 8}, {'C': 3, 'H': 2, 'X': 8}]
 #combined_formulas = b.combine_chemical_formulas(test_formula_list)
 #print(combined_formulas)
+#some_bad_reactants_dict = {'test_1': '2', 'test_2': '1.1'}
+#some_bad_species_dict = {'M_Biomass_c': ''}
+#result = b.remove_unusable_elements(some_bad_reactants_dict, some_bad_species_dict)
+#print(result)
 
 reactions = b.get_reactions(model)
 for reaction_id, (list_of_reactants, list_of_products) in reactions.items():
     print("------------")
     print("Reaction  -> ", reaction_id)
+
     dict_reactants = b.get_species_references(list_of_reactants)
-    dict_products = b.get_species_references(list_of_products)
-    combined_reactants_formula = b.get_combined_chemical_formula(species, species_without_chemical_formula, dict_reactants)
-    combined_products_formula = b.get_combined_chemical_formula(species, species_without_chemical_formula, dict_products)
-    print("Reactants -> ", dict_reactants)
-    print("Products  -> ", dict_products)
+    reactants_dict_updated = b.remove_unusable_elements(dict_reactants, species_without_chemical_formula)
+
+    products_dict = b.get_species_references(list_of_products)
+    products_dict_updated = b.remove_unusable_elements(products_dict, species_without_chemical_formula)
+
+    combined_reactants_formula = b.get_combined_chemical_formula(species, reactants_dict_updated)
+    combined_products_formula = b.get_combined_chemical_formula(species, products_dict_updated)
+
+    print("Reactants -> ", reactants_dict_updated)
+    print("Products  -> ", products_dict_updated)
     print("Reactants Combined -> ", combined_reactants_formula)
     print("Products Combined  -> ", combined_products_formula)
     added, removed, modified, same = b.compare(combined_reactants_formula, combined_products_formula)
