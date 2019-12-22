@@ -57,20 +57,20 @@ class Balancer:
 
     def get_species(self, model_node):
         species = {}
+        species_without_chemical_formula = {}
         list_of_species = model_node.find(self.node_name_list_of_species)
         for s in list_of_species:
             species_attributes = s.attrib
             id = species_attributes.get(self.species_attribute_id)
             chemical_formula = species_attributes.get(self.species_attribute_chemical_formula)
-            species.update({id : chemical_formula})
+            if chemical_formula:
+                species.update({id : chemical_formula})
+            else:
+                species_without_chemical_formula.update({id : chemical_formula})
 
         updated_species = self.create_chemical_formula_model(species)
-        return updated_species
+        return (updated_species, species_without_chemical_formula)
 
-    """
-    Turn a chemicalFormula string like "C21H26N7O17P3"
-    in a dictionary like this: {'C', '21'},{'H', '26'}...
-    """
     def create_chemical_formula_model(self, species):
         for id, chemical_formula_string in species.items():
             my_dict = self.build_dictionary_of_string(id, chemical_formula_string)
@@ -78,8 +78,8 @@ class Balancer:
         return species
 
     def build_dictionary_of_string(self, id, chemical_formula_string):
-        chemical_formula_list = (re.findall(r'[A-Za-z]|-?\d+\.\d+|\d+', chemical_formula_string))
         my_dict = {}
+        chemical_formula_list = (re.findall(r'[A-Za-z]|-?\d+\.\d+|\d+', chemical_formula_string))
         key, value = "", ""
         for element in chemical_formula_list:
             if self.is_integer(element):
@@ -104,11 +104,13 @@ class Balancer:
         except ValueError:
             return False
 
-    def get_combined_chemical_formula(self, species_dict, dict_elements):
+    def get_combined_chemical_formula(self, species_dict, species_dict_without_chem_formula, dict_elements):
         my_formulas_list = []
         for id, coefficient in dict_elements.items():
-            calculated_formula = self.calculate_chemical_formula(species_dict, id, coefficient)
-            my_formulas_list.append(calculated_formula)
+            # skip reactants / products without chemical formula
+            if not id in species_dict_without_chem_formula:
+                calculated_formula = self.calculate_chemical_formula(species_dict, id, coefficient)
+                my_formulas_list.append(calculated_formula)
         my_dict = self.combine_chemical_formulas(my_formulas_list)
         return my_dict
 
@@ -145,11 +147,8 @@ class Balancer:
 
 b = Balancer()
 full_file_name = b.get_full_file_name()
-
 model = b.get_model_node(full_file_name)
-
-species = b.get_species(model)
-#print(species)
+species, species_without_chemical_formula = b.get_species(model)
 
 # DO NOT DELETE - this is for testing
 #b.calculate_chemical_formula(species, "M_aicar_d", 2)
@@ -163,11 +162,16 @@ for reaction_id, (list_of_reactants, list_of_products) in reactions.items():
     print("Reaction  -> ", reaction_id)
     dict_reactants = b.get_species_references(list_of_reactants)
     dict_products = b.get_species_references(list_of_products)
-    combined_reactants_formula = b.get_combined_chemical_formula(species, dict_reactants)
-    combined_products_formula = b.get_combined_chemical_formula(species, dict_products)
+    combined_reactants_formula = b.get_combined_chemical_formula(species, species_without_chemical_formula, dict_reactants)
+    combined_products_formula = b.get_combined_chemical_formula(species, species_without_chemical_formula, dict_products)
     print("Reactants -> ", dict_reactants)
     print("Products  -> ", dict_products)
     print("Reactants Combined -> ", combined_reactants_formula)
     print("Products Combined  -> ", combined_products_formula)
     added, removed, modified, same = b.compare(combined_reactants_formula, combined_products_formula)
-    print("Comparison -> \nReactants only: ", added, "\nProducts only: ", removed, "\nDifferences: ", modified, "\nEqual elements: ", same)
+    print("Comparison -> \nElemements in Reactants only: ", added, "\nElemements in Products only: ", removed, "\nDifferences: ", modified, "\nEqual elements: ", same)
+
+print("------------")
+print("Summary")
+print("Number of reactions: ", len(reactions))
+print("Skipped species without chemical formula: ", species_without_chemical_formula)
