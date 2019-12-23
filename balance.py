@@ -4,8 +4,8 @@ import re
 
 class Balancer:
 
-    #file_name = "Supporting Information File S1_Jcurcas_model.xml"
-    file_name = "test-data.xml"
+    file_name = "Supporting Information File S1_Jcurcas_model.xml"
+    #file_name = "test-data.xml"
     node_name_list_of_species = "listOfSpecies"
     node_name_list_of_reactions = "listOfReactions"
     node_name_reactants = "listOfReactants"
@@ -185,6 +185,14 @@ for reaction_id, (list_of_reactants, list_of_products) in reactions.items():
     print("Reactants chem. formulas combined -> ", combined_reactants_formula)
     print("Products chem. formulas combined  -> ", combined_products_formula)
     added, removed, modified, same = b.compare(combined_reactants_formula, combined_products_formula)
+    if len(added) == 0:
+        added = ""
+    if len(removed) == 0:
+        removed = ""
+    if len(modified) == 0:
+        modified = ""
+    if len(same) == 0:
+        same = ""
     print("Comparison")
     print("Elemements in Reactants only      -> ", added)
     print("Elemements in Products only       -> ", removed)
