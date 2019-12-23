@@ -5,8 +5,9 @@ import re
 class Balancer:
 
     file_name = ""
-    #file_name = "Supporting Information File S1_Jcurcas_model.xml"
-    #file_name = "test-data.xml"
+    model = ""
+
+    node_name_model = "model"
     node_name_list_of_species = "listOfSpecies"
     node_name_list_of_reactions = "listOfReactions"
     node_name_reactants = "listOfReactants"
@@ -20,25 +21,20 @@ class Balancer:
     species_attribute_chemical_formula = "chemicalFormula"
 
     def __init__(self, file_name):
-        self.file_name = file_name
-
-    def get_full_file_name(self):
-        full_file_name = os.path.abspath(os.path.join("data", self.file_name))
-        return full_file_name
-
-    def get_model_node(self, full_file_name):
-        tree = ET.parse(full_file_name)
+        self.file_name = os.path.abspath(os.path.join("data", file_name))
+        tree = ET.parse(self.file_name)
         root = tree.getroot()
-        model = root.find("model")
-        return model
+        self.model = root.find(self.node_name_model)
 
-    def get_reactions(self, model_node):
+    def get_reactions(self):
         reactions = {}
-        list_of_reactions = model_node.find(self.node_name_list_of_reactions)
+        list_of_reactions = self.model.find(self.node_name_list_of_reactions)
         for reaction in list_of_reactions:
             reaction_list_tuple = self.get_reaction_content(reaction)
             (reaction_id, list_of_reactants, list_of_products) = reaction_list_tuple
-            reactions.update({reaction_id : (list_of_reactants, list_of_products)})
+            reactants_dict = self.get_species_references(list_of_reactants)
+            products_dict = self.get_species_references(list_of_products)
+            reactions.update({reaction_id : (reactants_dict, products_dict)})
         return reactions
 
     def get_reaction_content(self, parent_node):
@@ -59,10 +55,10 @@ class Balancer:
                 dict.update({id : coefficient})
         return dict
 
-    def get_species(self, model_node):
+    def get_species(self):
         species = {}
         species_without_chemical_formula = {}
-        list_of_species = model_node.find(self.node_name_list_of_species)
+        list_of_species = self.model.find(self.node_name_list_of_species)
         for s in list_of_species:
             species_attributes = s.attrib
             id = species_attributes.get(self.species_attribute_id)
@@ -151,6 +147,14 @@ class Balancer:
         removed = d2_keys - d1_keys
         modified = {o : (d1[o], d2[o]) for o in intersect_keys if d1[o] != d2[o]}
         same = set(o for o in intersect_keys if d1[o] == d2[o])
+        if len(added) == 0:
+            added = ""
+        if len(removed) == 0:
+            removed = ""
+        if len(modified) == 0:
+            modified = ""
+        if len(same) == 0:
+            same = ""
         return added, removed, modified, same
 
     """
@@ -174,14 +178,6 @@ class Balancer:
         print("Reactants chem. formulas combined -> ", combined_reactants_formula)
         print("Products chem. formulas combined  -> ", combined_products_formula)
         added, removed, modified, same = self.compare(combined_reactants_formula, combined_products_formula)
-        if len(added) == 0:
-            added = ""
-        if len(removed) == 0:
-            removed = ""
-        if len(modified) == 0:
-            modified = ""
-        if len(same) == 0:
-            same = ""
         print("Comparison")
         print("Elemements in Reactants only      -> ", added)
         print("Elemements in Products only       -> ", removed)
