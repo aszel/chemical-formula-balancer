@@ -161,13 +161,42 @@ class Balancer:
                 my_dict.update({id : coefficient})
         return my_dict
 
+    def print_status(self, reaction_id, reactants_dict_updated, products_dict_updated,
+        combined_reactants_formula, combined_products_formula):
+        print("------------")
+        print("Reaction ID                       -> ", reaction_id)
+        print("Reactants [speciesId,coefficient] -> ", reactants_dict_updated)
+        print("Products  [speciesId,coefficient] -> ", products_dict_updated)
+        print("Reactants chem. formulas combined -> ", combined_reactants_formula)
+        print("Products chem. formulas combined  -> ", combined_products_formula)
+        added, removed, modified, same = b.compare(combined_reactants_formula, combined_products_formula)
+        if len(added) == 0:
+            added = ""
+        if len(removed) == 0:
+            removed = ""
+        if len(modified) == 0:
+            modified = ""
+        if len(same) == 0:
+            same = ""
+        print("Comparison")
+        print("Elemements in Reactants only      -> ", added)
+        print("Elemements in Products only       -> ", removed)
+        print("Differences                       -> ", modified)
+        print("Equal elements                    -> ", same)
+
+    def print_summary(self, reactions, species_without_chemical_formula):
+        print("------------")
+        print("Summary")
+        print("Number of reactions: ", len(reactions))
+        print("Skipped species without chemical formula: ", species_without_chemical_formula)
+
 
 b = Balancer()
 full_file_name = b.get_full_file_name()
 model = b.get_model_node(full_file_name)
 species, species_without_chemical_formula = b.get_species(model)
-
 reactions = b.get_reactions(model)
+
 for reaction_id, (list_of_reactants, list_of_products) in reactions.items():
     dict_reactants = b.get_species_references(list_of_reactants)
     reactants_dict_updated = b.remove_unusable_elements(dict_reactants, species_without_chemical_formula, species)
@@ -178,34 +207,10 @@ for reaction_id, (list_of_reactants, list_of_products) in reactions.items():
     combined_reactants_formula = b.get_combined_chemical_formula(species, reactants_dict_updated)
     combined_products_formula = b.get_combined_chemical_formula(species, products_dict_updated)
 
-    print("------------")
-    print("Reaction ID                       -> ", reaction_id)
-    print("Reactants [speciesId,coefficient] -> ", reactants_dict_updated)
-    print("Products  [speciesId,coefficient] -> ", products_dict_updated)
-    print("Reactants chem. formulas combined -> ", combined_reactants_formula)
-    print("Products chem. formulas combined  -> ", combined_products_formula)
-    added, removed, modified, same = b.compare(combined_reactants_formula, combined_products_formula)
-    if len(added) == 0:
-        added = ""
-    if len(removed) == 0:
-        removed = ""
-    if len(modified) == 0:
-        modified = ""
-    if len(same) == 0:
-        same = ""
-    print("Comparison")
-    print("Elemements in Reactants only      -> ", added)
-    print("Elemements in Products only       -> ", removed)
-    print("Differences                       -> ", modified)
-    print("Equal elements                    -> ", same)
+    b.print_status(reaction_id, reactants_dict_updated, products_dict_updated,
+        combined_reactants_formula, combined_products_formula)
 
-print("------------")
-print("Summary")
-print("Number of reactions: ", len(reactions))
-print("Skipped species without chemical formula: ", species_without_chemical_formula)
-
-
-
+b.print_summary(reactions, species_without_chemical_formula)
 
 # DO NOT DELETE - this is for testing
 #b.calculate_chemical_formula(species, "M_aicar_d", 2)
