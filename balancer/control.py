@@ -6,7 +6,8 @@ class Controller:
     file = ""
 
     def __init__(self):
-        file_name = "test-data.xml"
+        #file_name = "test-data.xml"
+        file_name = "test-data-2.xml"
         #file_name = "Supporting Information File S1_Jcurcas_model.xml"
         self.bal = balance.Balancer(file_name)
 
